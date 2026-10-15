@@ -1,0 +1,11 @@
+; Préprocesseur Eliom côté client, utilisé pour générer client/h42n42.ml.
+(executable
+ (name eliom_ppx_client)
+ (modes native)
+ (modules eliom_ppx_client)
+ (libraries eliom.ppx.client))
+
+(rule
+ (action
+  (with-stdout-to eliom_ppx_client.ml
+   (echo "let () = Ppxlib.Driver.standalone ()"))))

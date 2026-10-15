@@ -1,0 +1,16 @@
+; Partie client de l'application Eliom, compilée en JavaScript par js_of_ocaml.
+(executable
+ (name h42n42)
+ (modes js byte)
+ (libraries eliom.client logic)
+ (preprocess (pps js_of_ocaml-ppx lwt_ppx)))
+
+; Extrait la partie client de h42n42.eliom. Le .cmo serveur fournit le type des valeurs injectées avec ~%.
+; Lancé depuis la racine pour que le nom du fichier source soit le même que lors de la compilation serveur.
+(rule
+ (target h42n42.ml)
+ (deps ../h42n42.eliom)
+ (action
+  (with-stdout-to %{target}
+   (chdir %{workspace_root}
+    (run src/tools/eliom_ppx_client.exe --as-pp -server-cmo %{cmo:../h42n42} --impl src/h42n42.eliom)))))

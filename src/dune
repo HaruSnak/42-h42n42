@@ -1,0 +1,13 @@
+; Logique pure du jeu : partagée par le serveur, le client et les tests.
+(library
+ (name logic)
+ (modules logic))
+
+; Partie serveur de l'application Eliom, chargée par ocsigenserver.
+(library
+ (name h42n42)
+ (modules h42n42)
+ (wrapped false)
+ (libraries eliom.server logic)
+ (library_flags (:standard -linkall))
+ (preprocess (pps lwt_ppx eliom.ppx.server)))

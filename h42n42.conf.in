@@ -1,0 +1,19 @@
+<!-- Generated from h42n42.conf.in by the Makefile: edit the .in file, not the .conf. -->
+<ocsigen>
+  <server>
+    <port>@PORT@</port>
+    <logdir>@LOGDIR@</logdir>
+    <datadir>@DATADIR@</datadir>
+    <charset>utf-8</charset>
+    <commandpipe>@RUNDIR@/h42n42-cmd</commandpipe>
+    <extension findlib-package="ocsigenserver.ext.staticmod"/>
+    <extension findlib-package="ocsipersist-sqlite"/>
+    <extension findlib-package="eliom.server"/>
+    <host hostfilter="*" defaulthostname="localhost">
+      <static dir="@STATICDIR@"/>
+      <eliommodule module="@LIBDIR@/logic.cma"/>
+      <eliommodule module="@LIBDIR@/h42n42.cma"/>
+      <eliom/>
+    </host>
+  </server>
+</ocsigen>

@@ -1,0 +1,18 @@
+services:
+  h42n42:
+    build: .
+    image: h42n42
+    ports:
+      - "8080:8080"
+    environment:
+      # Affiche la pile d'appels OCaml si le serveur s'arrête sur une exception.
+      OCAMLRUNPARAM: "b"
+    volumes:
+      # Développement : les modifications du CSS sont servies sans reconstruire l'image.
+      - ./static/css:/home/opam/h42n42/static/css:ro
+      # Journaux d'Ocsigen conservés entre deux redémarrages du conteneur.
+      - h42n42-logs:/home/opam/h42n42/local/log
+    restart: unless-stopped
+
+volumes:
+  h42n42-logs:

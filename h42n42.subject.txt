@@ -1,0 +1,370 @@
+Chapter II
+Introduction
+For millennia, Creatures have lived in a peaceful land bordered by a river. Unfortunately,
+the river has been polluted by H42N42, a deadly and highly infectious virus. The Creatures will not survive without your assistance! Your goal is to help them stay away from
+the river and bring the sick ones to the hospital where they will be healed so they don’t
+contaminate the others.
+In this project, you will write an interactive simulator of this Creature world with a
+Web UI written in OCaml on the client side.
+
+4
+
+Chapter III
+Objectives
+Ocsigen allows you to manage every aspect of Web app programming, and to create
+client-server websites and applications. For a gentle start, this project will help you
+discover client-side programming with the library Eliom and the compiler Js_of_ocaml,
+and will teach you to:
+1. Run an OCaml program in a web browser using the Ocsigen Js_of_ocaml compiler;
+2. Statically validate the HTML pages you generate to prevent your program from creating invalid pages;
+3. Interact with the browser’s DOM and call Javascript methods using your OCaml
+program;
+4. Program handlers for mouse events;
+5. Program cooperative threads in monadic style with Ocsigen Lwt.
+
+5
+
+Chapter IV
+General instructions
+The project must be entirely programmed using the latest version of OCaml, the Js_of_ocaml
+compiler, and the Eliom library from the Ocsigen project.
+You will find the Ocsigen documentation on the project website. Take time to read
+the tutorials before starting.
+
+IV.1
+
+Technical Requirements
+
+• Each Creature must be commanded by a Lwt thread.
+• It will be displayed as an HTML element (a <div> or <img> for instance). All
+dynamically generated elements of the page must be created using the TyXML library
+(such as Eliom_content.Html.D).
+• Mouse events must be programmed with the Lwt_js_event module of Js_of_ocaml.
+You will find examples of this module in tutorials on the Ocsigen website.
+• Your project must use OCaml version 4.14 or higher.
+• You must use Ocsigen/Eliom version 10.0 or higher and Js_of_ocaml version 5.0
+or higher.
+• Your project must include a Makefile with at least the following rules: all, clean,
+fclean, and re.
+• The Makefile must not recompile unnecessarily (use proper dependencies).
+
+IV.2
+
+Project Organization
+
+Your project must follow a clear and logical structure. At minimum, you should have:
+• A src/ directory containing your .eliom source files
+• A static/ directory for static assets (CSS, images, etc.)
+6
+
+H42N42
+
+Simulate the life of a population of creatures threatened by a terrifying virus
+
+• Configuration files at the root (.conf.in files for Ocsigen server)
+• A Makefile for building the project
+• Docker configuration files (see next chapter)
+
+IV.3
+
+Advice
+
+• Keep your browser debugging tools handy;
+• Read the Ocsigen tutorials;
+• Start with a simple working version before adding complexity;
+• Test frequently in the browser during development;
+• Use the browser console to debug JavaScript compilation issues.
+
+7
+
+Chapter V
+Docker Setup and Deployment
+To ensure your project can be easily deployed and tested in any environment, you must
+containerize your application using Docker.
+
+V.1
+
+Docker Requirements
+
+Your project must include the following Docker configuration files:
+• A Dockerfile that:
+◦ Uses an appropriate base image with OCaml support (e.g., ocaml/opam)
+◦ Installs all necessary dependencies (Ocsigen, Eliom, Js_of_ocaml, etc.)
+◦ Copies your source code into the container
+◦ Compiles your application
+◦ Exposes the appropriate port (default: 8080)
+◦ Defines the command to start the Ocsigen server
+• A docker-compose.yml file that:
+◦ Defines the service for your application
+◦ Maps the container port to the host (e.g., 8080:8080)
+◦ Sets up any necessary volumes for development
+◦ Configures environment variables if needed
+
+V.2
+
+Deployment Instructions
+
+Your application must be launchable with a single command:
+docker-compose up --build
+
+8
+
+H42N42
+
+Simulate the life of a population of creatures threatened by a terrifying virus
+
+After running this command, the application should be accessible in a web browser
+at http://localhost:8080 (or the port you specified).
+The Docker setup must:
+• Build successfully without manual intervention
+• Install all dependencies automatically
+• Compile the OCaml code to JavaScript using Js_of_ocaml
+• Start the Ocsigen server automatically
+• Serve the application on the specified port
+• Handle server restarts gracefully during development (optional but recommended)
+
+Your project will not be evaluated if it cannot be launched using
+Docker. Make sure to test your Docker configuration on a clean
+system before submission.
+
+9
+
+Chapter VI
+Mandatory part
+VI.1
+
+Game Overview
+
+You will create an interactive browser-based game where creatures called Creets move
+around in a rectangular play area. The game features:
+• A toxic river at the top of the screen that contaminates Creets
+• A hospital at the bottom where sick Creets can be healed
+• Player interaction through mouse drag-and-drop to save Creets
+• Progressive difficulty as the game advances
+
+VI.1.1
+
+Game Objective
+
+The goal is to keep the Creet population alive as long as possible by:
+• Preventing healthy Creets from touching the toxic river
+• Dragging sick Creets to the hospital for healing
+• Managing the spread of contamination
+The game ends when all Creets are either dead or contaminated with no healthy
+Creets remaining.
+
+VI.2
+
+Game Mechanics
+
+VI.2.1
+
+Creet Movement and Behavior
+
+• Movement Pattern: Creets move in straight lines at constant speed. They may
+randomly change direction, but not too frequently (allow players to predict paths
+while maintaining unpredictability).
+• Boundary Behavior: When a Creet reaches any edge of the game area, it must
+bounce back realistically (angle of incidence equals angle of reflection).
+10
+
+H42N42
+
+Simulate the life of a population of creatures threatened by a terrifying virus
+
+• Initial Population: Start with a reasonable number of Creets (e.g., 5-10) based
+on their size. The display should be clear and not cluttered.
+• Reproduction: As long as at least one healthy Creet exists, new Creets spawn
+periodically (e.g., every few seconds). Healthy Creets never die of old age.
+• No Collisions: Creets pass through each other without bouncing. Only contamination occurs on contact.
+
+VI.2.2
+
+Player Interaction
+
+• Drag and Drop: The player can click and drag any Creet to move it anywhere
+on the screen using the mouse.
+• Invulnerability While Dragging: A Creet being dragged by the player cannot
+be contaminated. This allows safe transport of healthy Creets away from danger.
+• Dropping Creets: Creets can be dropped anywhere, including outside the normal
+game boundaries. They will resume normal movement from their new position.
+
+VI.2.3
+
+Contamination System
+
+• River Contamination: Any Creet that touches the toxic river at the top of the
+screen immediately becomes sick.
+• Visual Change: Contaminated Creets instantly change color to distinguish them
+from healthy ones.
+• Speed Reduction: Sick Creets move 15% slower than healthy ones.
+• Spread Mechanism: When a contaminated Creet touches a healthy Creet, there
+is a 2% chance of transmission per contact/iteration. Check this probability continuously while they are in contact.
+• Contact Detection: Use distance calculation between Creet centers and their
+radii to determine if they are touching. Be precise: no contamination without
+actual contact.
+
+VI.2.4
+
+Hospital Healing
+
+• Hospital Location: The hospital is located at the bottom of the game area.
+• Healing Requirement: Only Creets that are manually dragged and dropped
+by the player into the hospital area will be healed. Sick Creets that randomly
+wander into the hospital are NOT healed.
+• Healing Effect: Healed Creets return to healthy status: they regain their original
+color, return to normal speed, and are no longer contagious.
+• Restrictions: Berserk and mean Creets (see below) cannot be healed and cannot
+be dragged to the hospital.
+11
+
+H42N42
+
+Simulate the life of a population of creatures threatened by a terrifying virus
+
+VI.2.5
+
+Special Creet Types
+
+When a Creet becomes contaminated, it may evolve into one of two dangerous types:
+Berserk Creets
+• Probability: 10% chance when a Creet gets sick (check once every 10 seconds
+after contamination).
+• Visual: Different color from regular sick Creets.
+• Growth: Diameter increases by 10% every 10 seconds.
+• Death: Dies when size reaches 4× original diameter (approximately 2 minutes 30
+seconds after becoming berserk).
+• Danger: Larger size means higher chance of touching and contaminating other
+Creets.
+• Restrictions: Cannot be grabbed by the player or healed.
+Mean Creets
+• Probability: 10% chance when a Creet gets sick (check once every 10 seconds
+after contamination).
+• Visual: Unique color different from both regular sick and berserk Creets.
+• Size: Shrinks to 85% of original size (15% smaller).
+• Behavior: Actively chases healthy Creets to contaminate them. Calculate direction toward nearest healthy Creet and move toward it.
+• Death: Dies after exactly 1 minute of being mean.
+• Restrictions: Cannot be grabbed by the player or healed.
+Important Notes
+• A contaminated Creet can become either berserk OR mean, but NOT both.
+• Once a Creet becomes berserk or mean, it remains that type until death.
+• Regular sick Creets (not berserk or mean) can still be healed at the hospital.
+
+VI.2.6
+
+Difficulty Progression
+
+• Speed Increase: All Creets gradually accelerate over time, making the game
+progressively harder.
+• Balancing: You are free to adjust the rate of acceleration to create a good difficulty
+curve. The game should:
+12
+
+H42N42
+
+Simulate the life of a population of creatures threatened by a terrifying virus
+◦ Start easy, giving players time to learn mechanics
+◦ Gradually become more challenging
+◦ Eventually become overwhelming, leading to inevitable defeat
+
+• Probability Adjustments: You may modify the specified probabilities (contamination chance, berserk/mean chance) ONLY if necessary for game balance, without
+fundamentally changing the game’s nature.
+
+VI.2.7
+
+Game Over Condition
+
+• The game ends when there are no healthy or living Creets remaining.
+• Display a clear "GAME OVER" message when this condition is met.
+• The message should be visible and unambiguous to the player.
+
+VI.2.8
+
+Implementation Guidelines
+
+• Visual Clarity: Choose Creet sizes that make the game playable and visually
+clear. Very small Creets would be hard to interact with; very large ones would
+clutter the screen.
+• Color Scheme: Use distinct colors for:
+◦ Healthy Creets
+◦ Regular sick Creets
+◦ Berserk Creets
+◦ Mean Creets
+• Performance: Ensure smooth animation even with multiple Creets on screen.
+Each Creet should run in its own Lwt thread.
+• User Feedback: Make it clear when a Creet is being dragged, when contamination
+occurs, and when healing happens.
+
+13
+
+H42N42
+
+Simulate the life of a population of creatures threatened by a terrifying virus
+
+14
+
+Chapter VIII
+Deliverables
+Your repository must contain all the necessary files to build, run, and understand your
+project. The following files are mandatory:
+
+VIII.1
+
+Required Files
+
+• README.md: A comprehensive documentation file that includes:
+◦ Project description and objectives
+◦ Prerequisites (Docker, docker-compose)
+◦ Installation and setup instructions
+◦ How to run the application (docker-compose command)
+◦ How to access the application in the browser
+◦ Brief explanation of the game rules
+◦ Any additional features or bonuses implemented
+• Dockerfile: Your Docker configuration for building the application
+• docker-compose.yml: Docker Compose configuration for easy deployment
+• Makefile: Build automation with rules: all, clean, fclean, re
+• src/: Directory containing your .eliom source files
+• static/: Directory containing CSS, images, and other static assets
+• Configuration files: .conf.in files for Ocsigen server configuration
+
+VIII.2
+
+Optional but Recommended
+
+• .gitignore: To exclude build artifacts and temporary files
+• .dockerignore: To optimize Docker build context
+19
+
+H42N42
+
+Simulate the life of a population of creatures threatened by a terrifying virus
+
+• Additional documentation for complex features
+• Screenshots or GIFs demonstrating the game in action
+
+Make sure your repository is clean and well-organized. Remove
+any unnecessary files, commented-out code, or debug outputs before
+submission.
+
+20
+
+Chapter IX
+Submission and peer-evaluation
+Turn in your assignment in your Git repository as usual. Only the work inside your repository will be evaluated during the defense. Don’t hesitate to double check the names of
+your folders and files to ensure they are correct.
+
+IX.1
+
+Before Submission
+
+Before submitting your project, verify that:
+• Your Docker setup works on a clean system (test in a fresh environment)
+• All mandatory requirements are implemented and functional
+• Your README.md is complete and accurate
+• Your code is clean, well-organized, and properly commented
+• The application runs without errors or warnings
+• All files are committed and pushed to your repository
+
+21
+
+
